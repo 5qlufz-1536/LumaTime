@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClientWorld.Properties.class)
-public class ClientWorldMixin {
+public class ClientWorldPropertiesMixin {
 	@Inject(at = @At("TAIL"), method = "getTimeOfDay", cancellable = true)
 	private void getTimeOfDay(CallbackInfoReturnable<Long> ci) {
 		if (ClientTime.timeEnabled) {
