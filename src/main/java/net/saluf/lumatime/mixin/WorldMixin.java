@@ -1,4 +1,4 @@
-package xyz.ryhon.clienttime.mixin;
+package net.saluf.lumatime.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -6,38 +6,38 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import net.minecraft.world.World;
-import xyz.ryhon.clienttime.ClientTime;
+import net.saluf.lumatime.LumaTime;
 
 @Mixin(World.class)
 public class WorldMixin {
 	@Inject(at = @At("TAIL"), method = "isRaining", cancellable = true)
 	private void isRaining(CallbackInfoReturnable<Boolean> ci) {
-		if (ClientTime.weatherEnabled) {
-			ci.setReturnValue(ClientTime.rain);
+		if (LumaTime.weatherEnabled) {
+			ci.setReturnValue(LumaTime.rain || LumaTime.snow);
 			return;
 		}
 	}
 
 	@Inject(at = @At("TAIL"), method = "isThundering", cancellable = true)
 	private void isThundering(CallbackInfoReturnable<Boolean> ci) {
-		if (ClientTime.weatherEnabled) {
-			ci.setReturnValue(ClientTime.thunder);
+		if (LumaTime.weatherEnabled) {
+			ci.setReturnValue(LumaTime.thunder);
 			return;
 		}
 	}
 
 	@Inject(at = @At("TAIL"), method = "getRainGradient", cancellable = true)
 	private void getRainGradient(float progress, CallbackInfoReturnable<Float> ci) {
-		if (ClientTime.weatherEnabled) {
-			ci.setReturnValue(ClientTime.rain ? 1.0f : 0.0f);
+		if (LumaTime.weatherEnabled) {
+			ci.setReturnValue(LumaTime.rain || LumaTime.snow ? 1.0f : 0.0f);
 			return;
 		}
 	}
 
 	@Inject(at = @At("TAIL"), method = "getThunderGradient", cancellable = true)
 	private void getThunderGradient(float progress, CallbackInfoReturnable<Float> ci) {
-		if (ClientTime.weatherEnabled) {
-			ci.setReturnValue(ClientTime.thunder ? 1.0f : 0.0f);
+		if (LumaTime.weatherEnabled) {
+			ci.setReturnValue(LumaTime.thunder ? 1.0f : 0.0f);
 			return;
 		}
 	}

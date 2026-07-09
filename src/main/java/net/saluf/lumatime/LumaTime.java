@@ -1,4 +1,4 @@
-package xyz.ryhon.clienttime;
+package net.saluf.lumatime;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -20,14 +20,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
-public class ClientTime implements ModInitializer {
-	public static final Logger LOGGER = LoggerFactory.getLogger("client-time");
+public class LumaTime implements ModInitializer {
+	public static final Logger LOGGER = LoggerFactory.getLogger("lumatime");
 
 	public static Boolean timeEnabled = false;
 	public static long time = 0L;
 
 	public static Boolean weatherEnabled = false;
 	public static Boolean rain = false;
+	public static Boolean snow = false;
 	public static Boolean thunder = false;
 
 	public static Boolean moonPhaseEnabled = false;
@@ -40,48 +41,52 @@ public class ClientTime implements ModInitializer {
 	public void onInitialize() {
 		loadConfig();
 
-		Category bindCategory = Category.create(Identifier.of("clienttime", "clienttime"));
-		KeyBinding menuBind = new KeyBinding("key.clienttime.menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+		Category bindCategory = Category.create(Identifier.of("lumatime", "lumatime"));
+		KeyBinding menuBind = new KeyBinding("key.lumatime.menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
 				bindCategory);
 		KeyBindingHelper.registerKeyBinding(menuBind);
 
-		KeyBinding toggleBind = new KeyBinding("key.clienttime.toggle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+		KeyBinding toggleBind = new KeyBinding("key.lumatime.toggle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
 				bindCategory);
 		KeyBindingHelper.registerKeyBinding(toggleBind);
 
-		KeyBinding toggleWeatherBind = new KeyBinding("key.clienttime.toggleWeather", InputUtil.Type.KEYSYM,
+		KeyBinding toggleWeatherBind = new KeyBinding("key.lumatime.toggleWeather", InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
 		KeyBindingHelper.registerKeyBinding(toggleWeatherBind);
 
-		KeyBinding toggleRainBind = new KeyBinding("key.clienttime.toggleRain", InputUtil.Type.KEYSYM,
+		KeyBinding toggleRainBind = new KeyBinding("key.lumatime.toggleRain", InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
 		KeyBindingHelper.registerKeyBinding(toggleRainBind);
 
-		KeyBinding toggleThunderBind = new KeyBinding("key.clienttime.toggleThunder", InputUtil.Type.KEYSYM,
+		KeyBinding toggleSnowBind = new KeyBinding("key.lumatime.toggleSnow", InputUtil.Type.KEYSYM,
+				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
+		KeyBindingHelper.registerKeyBinding(toggleSnowBind);
+
+		KeyBinding toggleThunderBind = new KeyBinding("key.lumatime.toggleThunder", InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
 		KeyBindingHelper.registerKeyBinding(toggleThunderBind);
 
-		KeyBinding toggleMoonPhaseBind = new KeyBinding("key.clienttime.toggleMoonPhase", InputUtil.Type.KEYSYM,
+		KeyBinding toggleMoonPhaseBind = new KeyBinding("key.lumatime.toggleMoonPhase", InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
 		KeyBindingHelper.registerKeyBinding(toggleMoonPhaseBind);
 
-		KeyBinding cycleMoonPhaseBind = new KeyBinding("key.clienttime.cycleMoonPhase", InputUtil.Type.KEYSYM,
+		KeyBinding cycleMoonPhaseBind = new KeyBinding("key.lumatime.cycleMoonPhase", InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
 		KeyBindingHelper.registerKeyBinding(cycleMoonPhaseBind);
 
-		KeyBinding sunriseBind = new KeyBinding("key.clienttime.sunrise", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+		KeyBinding sunriseBind = new KeyBinding("key.lumatime.sunrise", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
 				bindCategory);
 		KeyBindingHelper.registerKeyBinding(sunriseBind);
 
-		KeyBinding noonBind = new KeyBinding("key.clienttime.noon", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+		KeyBinding noonBind = new KeyBinding("key.lumatime.noon", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
 				bindCategory);
 		KeyBindingHelper.registerKeyBinding(noonBind);
 
-		KeyBinding sunsetBind = new KeyBinding("key.clienttime.sunset", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+		KeyBinding sunsetBind = new KeyBinding("key.lumatime.sunset", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
 				bindCategory);
 		KeyBindingHelper.registerKeyBinding(sunsetBind);
 
-		KeyBinding midnightBind = new KeyBinding("key.clienttime.midnight", InputUtil.Type.KEYSYM,
+		KeyBinding midnightBind = new KeyBinding("key.lumatime.midnight", InputUtil.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
 		KeyBindingHelper.registerKeyBinding(midnightBind);
 
@@ -102,8 +107,17 @@ public class ClientTime implements ModInitializer {
 			if (toggleWeatherBind.wasPressed())
 				weatherEnabled = !weatherEnabled;
 
-			if (toggleRainBind.wasPressed())
+			if (toggleRainBind.wasPressed()) {
 				rain = !rain;
+				if (rain)
+					snow = false;
+			}
+
+			if (toggleSnowBind.wasPressed()) {
+				snow = !snow;
+				if (snow)
+					rain = false;
+			}
 
 			if (toggleThunderBind.wasPressed())
 				thunder = !thunder;
@@ -130,7 +144,7 @@ public class ClientTime implements ModInitializer {
 		});
 	}
 
-	static Path configDir = FabricLoader.getInstance().getConfigDir().resolve("clienttime");
+	static Path configDir = FabricLoader.getInstance().getConfigDir().resolve("lumatime");
 	static Path configFile = configDir.resolve("config.json");
 
 	static void loadConfig() {
@@ -146,9 +160,12 @@ public class ClientTime implements ModInitializer {
 			if(jo.has("time")) time = jo.get("time").getAsLong();
 			if(jo.has("weatherEnabled")) weatherEnabled = jo.get("weatherEnabled").getAsBoolean();
 			if(jo.has("rain")) rain = jo.get("rain").getAsBoolean();
+			if(jo.has("snow")) snow = jo.get("snow").getAsBoolean();
 			if(jo.has("thunder")) thunder = jo.get("thunder").getAsBoolean();
 			if(jo.has("moonCycleEnabled")) moonPhaseEnabled = jo.get("moonCycleEnabled").getAsBoolean();
 			if(jo.has("moonCycle")) moonPhase = jo.get("moonCycle").getAsInt();
+			if (snow)
+				rain = false;
 
 		} catch (Exception e) {
 			LOGGER.error("Failed to load config", e);
@@ -162,6 +179,7 @@ public class ClientTime implements ModInitializer {
 		jo.add("time", new JsonPrimitive(time));
 		jo.add("weatherEnabled", new JsonPrimitive(weatherEnabled));
 		jo.add("rain", new JsonPrimitive(rain));
+		jo.add("snow", new JsonPrimitive(snow));
 		jo.add("thunder", new JsonPrimitive(thunder));
 		jo.add("moonCycleEnabled", new JsonPrimitive(moonPhaseEnabled));
 		jo.add("moonCycle", new JsonPrimitive(moonPhase));

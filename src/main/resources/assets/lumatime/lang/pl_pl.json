@@ -1,0 +1,22 @@
+{
+	"modmenu.descriptionTranslation.lumatime": "Zmień godzinę i pogodę na kliencie.",
+
+	"key.category.lumatime.lumatime": "LumaTime",
+	"key.lumatime.menu": "Otwórz menu",
+	"key.lumatime.toggle": "Przełącz zmianę czasu",
+	"key.lumatime.toggleWeather": "Przełącz zmianę pogody",
+	"key.lumatime.toggleRain": "Przełącz deszcz",
+	"key.lumatime.toggleSnow": "Przełącz śnieg",
+	"key.lumatime.toggleThunder": "Przełącz burzę",
+	"key.lumatime.toggleMoonPhase": "Przełącz zmianę fazy Księżyca",
+	"key.lumatime.cycleMoonPhase": "Cykluj fazę Księżyca",
+	"key.lumatime.sunrise": "Ustaw czas na wschód słońca",
+	"key.lumatime.noon": "Ustaw czas na południe",
+	"key.lumatime.sunset": "Ustaw czas na zachód słońca",
+	"key.lumatime.midnight": "Ustaw czas na północ",
+
+	"lumatime.timeScreen.time": "Czas",
+	"lumatime.timeScreen.timePresets": "Presety czasu",
+	"lumatime.timeScreen.moonPhase": "Faza Księżyca",
+	"lumatime.timeScreen.weather": "Pogoda"
+}

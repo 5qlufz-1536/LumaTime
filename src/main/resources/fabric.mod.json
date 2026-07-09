@@ -1,35 +1,37 @@
 {
 	"schemaVersion": 1,
-	"id": "client-time",
+	"id": "lumatime",
 	"version": "${version}",
-	"name": "Client Time",
-	"description": "Override the time and weather on the client.",
+	"name": "LumaTime",
+	"description": "Customize time and weather locally on the client.",
 	"authors": [
-		"Ryhon"
+		"saluf"
 	],
+    "contributors": [
+      "Ryhon - Original ClientTime developer"
+    ],
 	"contact": {
-		"homepage": "https://ryhon.xyz/",
-		"sources": "https://github.com/Ryhon0/ClientTime",
-		"issues": "https://github.com/Ryhon0/ClientTime/issues"
+		"sources": "https://github.com/5qlufz-1536/LumaTime",
+		"issues": "https://github.com/5qlufz-1536/LumaTime/issues"
 	},
 	"license": "GPL-3.0",
-	"icon": "assets/client-time/icon.png",
+	"icon": "assets/lumatime/icon.png",
 	"environment": "client",
 	"entrypoints": {
 		"main": [
-			"xyz.ryhon.clienttime.ClientTime"
+			"net.saluf.lumatime.LumaTime"
 		],
 		"modmenu":[
-			"xyz.ryhon.clienttime.ModMenuAPIImpl"
+			"net.saluf.lumatime.ModMenuAPIImpl"
 		]
 	},
 	"mixins": [
-		"client-time.mixins.json"
+		"lumatime.mixins.json"
 	],
 	"accessWidener": "time.accesswidener",
 	"depends": {
-		"fabricloader": "*",
-		"minecraft": "*",
+		"fabricloader": ">=0.18.1",
+		"minecraft": "1.21.11",
 		"java": ">=21",
 		"fabric-api": "*"
 	},
@@ -39,10 +41,9 @@
 	"custom": {
 		"modmenu": {
 			"links": {
-				"modmenu.donate": "https://github.com/sponsors/Ryhon0",
-				"modmenu.modrinth": "https://modrinth.com/mod/clienttime",
-				"modmenu.github_releases": "https://github.com/Ryhon0/ClientTime/releases",
-				"modmenu.twitter": "https://twitter.com/RyhonDev"
+				"modmenu.modrinth": "https://modrinth.com/mod/lumatime",
+				"modmenu.github_releases": "https://github.com/5qlufz-1536/LumaTime/releases",
+				"modmenu.twitter": "https://twitter.com/3aluf"
 			}
 		}
 	}

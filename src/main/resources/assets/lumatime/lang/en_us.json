@@ -1,0 +1,20 @@
+{
+	"key.category.lumatime.lumatime": "LumaTime",
+	"key.lumatime.menu": "Open Menu",
+	"key.lumatime.toggle": "Toggle Time Override",
+	"key.lumatime.toggleWeather": "Toggle Weather Override",
+	"key.lumatime.toggleRain": "Toggle Rain",
+	"key.lumatime.toggleSnow": "Toggle Snow",
+	"key.lumatime.toggleThunder": "Toggle Thunder",
+	"key.lumatime.toggleMoonPhase": "Toggle Moon Phase Override",
+	"key.lumatime.cycleMoonPhase": "Cycle Moon Phase",
+	"key.lumatime.sunrise": "Set Time to Sunrise",
+	"key.lumatime.noon": "Set Time to Noon",
+	"key.lumatime.sunset": "Set Time to Sunset",
+	"key.lumatime.midnight": "Set Time to Midnight",
+
+	"lumatime.timeScreen.time": "Time",
+	"lumatime.timeScreen.timePresets": "Time Presets",
+	"lumatime.timeScreen.moonPhase": "Moon Phase",
+	"lumatime.timeScreen.weather": "Weather"
+}

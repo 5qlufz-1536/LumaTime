@@ -1,11 +1,13 @@
 {
 	"required": true,
-	"package": "xyz.ryhon.clienttime.mixin",
+	"package": "net.saluf.lumatime.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"WorldMixin",
+		"BiomeMixin",
 		"ClientWorldPropertiesMixin",
-		"WorldEnvironmentAttributeAccessMixin"
+		"WorldEnvironmentAttributeAccessMixin",
+		"WeatherRenderingMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

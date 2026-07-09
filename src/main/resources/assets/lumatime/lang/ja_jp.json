@@ -1,0 +1,20 @@
+{
+	"key.category.lumatime.lumatime": "LumaTime",
+	"key.lumatime.menu": "メニューを開く",
+	"key.lumatime.toggle": "時刻オーバーライド切替",
+	"key.lumatime.toggleWeather": "天候オーバーライド切替",
+	"key.lumatime.toggleRain": "雨切替",
+	"key.lumatime.toggleSnow": "雪切替",
+	"key.lumatime.toggleThunder": "雷切替",
+	"key.lumatime.toggleMoonPhase": "月相オーバーライド切替",
+	"key.lumatime.cycleMoonPhase": "月相を進める",
+	"key.lumatime.sunrise": "時刻を夜明けに設定",
+	"key.lumatime.noon": "時刻を正午に設定",
+	"key.lumatime.sunset": "時刻を夕暮れに設定",
+	"key.lumatime.midnight": "時刻を真夜中に設定",
+
+	"lumatime.timeScreen.time": "時刻",
+	"lumatime.timeScreen.timePresets": "時刻プリセット",
+	"lumatime.timeScreen.moonPhase": "月相",
+	"lumatime.timeScreen.weather": "天候"
+}

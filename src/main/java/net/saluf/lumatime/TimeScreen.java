@@ -1,4 +1,4 @@
-package xyz.ryhon.clienttime;
+package net.saluf.lumatime;
 
 import java.util.function.Consumer;
 
@@ -40,6 +40,7 @@ public class TimeScreen extends Screen {
 	TextWidget weatherText;
 	CheckboxButton weatherEnabledButton;
 	CheckboxButton rainButton;
+	CheckboxButton snowButton;
 	CheckboxButton thunderButton;
 
 	static final int CheckboxPadding = 4;
@@ -50,52 +51,73 @@ public class TimeScreen extends Screen {
 	}
 
 	@Override
+	public void applyBlur(DrawContext context) {
+	}
+
+	@Override
+	public void blur() {
+	}
+
+	@Override
+	public void renderInGameBackground(DrawContext context) {
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+	}
+
+	@Override
+	public boolean shouldPause() {
+		return false;
+	}
+
+	@Override
 	protected void init() {
 		timeSlider = new SimpleSlider(0, 24000);
-		timeSlider.setIValue(ClientTime.time);
+		timeSlider.setIValue(LumaTime.time);
 		timeSlider.onValue = (Long l) -> {
-			ClientTime.time = l;
+			LumaTime.time = l;
 		};
 		timeSlider.setWidth(width / 4);
 		timeSlider.setHeight(32);
-		timeSlider.setPosition((width / 2) - (timeSlider.getWidth() / 2), (height / 2) - (timeSlider.getHeight() / 2));
+		timeSlider.setPosition((width / 2) - (timeSlider.getWidth() / 2), java.lang.Math.max(60, height - 96));
 
-		timeText = new TextWidget(Text.translatable("clienttime.timeScreen.time"), textRenderer);
+		timeText = new TextWidget(Text.translatable("lumatime.timeScreen.time"), textRenderer);
 		timeText.setPosition(timeSlider.getX(), timeSlider.getY() - textRenderer.fontHeight);
 		addDrawableChild(timeText);
 
+		timePresetsText = new TextWidget(Text.translatable("lumatime.timeScreen.timePresets"), textRenderer);
+		timePresetsText.setPosition(timeSlider.getX() + timeSlider.getWidth() + 72, timeText.getY());
+		addDrawableChild(timePresetsText);
+
 		sunriseButton = new ButtonWithIcon(Identifier.of("textures/item/clock_48.png"), 32,
-				timeText.getX(), timeText.getY() - 32,
+				timePresetsText.getX(), timeSlider.getY(),
 				32, 32,
 				Text.empty(), (ButtonWidget b) -> {
-					ClientTime.time = 0;
+					LumaTime.time = 0;
 					timeSlider.setIValue(0);
 				});
 		noonButton = new ButtonWithIcon(Identifier.of("textures/item/clock_00.png"), 32,
 				sunriseButton.getX() + 32, sunriseButton.getY(),
 				32, 32,
 				Text.empty(), (ButtonWidget b) -> {
-					ClientTime.time = 6000;
+					LumaTime.time = 6000;
 					timeSlider.setIValue(6000);
 				});
 		sunsetButton = new ButtonWithIcon(Identifier.of("textures/item/clock_15.png"), 32,
 				noonButton.getX() + 32, noonButton.getY(),
 				32, 32,
 				Text.empty(), (ButtonWidget b) -> {
-					ClientTime.time = 12000;
+					LumaTime.time = 12000;
 					timeSlider.setIValue(12000);
 				});
 		midnightButton = new ButtonWithIcon(Identifier.of("textures/item/clock_32.png"), 32,
 				sunsetButton.getX() + 32, sunsetButton.getY(),
 				32, 32,
 				Text.empty(), (ButtonWidget b) -> {
-					ClientTime.time = 18000;
+					LumaTime.time = 18000;
 					timeSlider.setIValue(18000);
 				});
-
-		timePresetsText = new TextWidget(Text.translatable("clienttime.timeScreen.timePresets"), textRenderer);
-		timePresetsText.setPosition(sunriseButton.getX(), sunriseButton.getY() - textRenderer.fontHeight);
-		addDrawableChild(timePresetsText);
 
 		addDrawable(sunriseButton);
 		addSelectableChild(sunriseButton);
@@ -106,83 +128,102 @@ public class TimeScreen extends Screen {
 		addDrawable(midnightButton);
 		addSelectableChild(midnightButton);
 
-		timeEnabledButton = new CheckboxButton(ClientTime.timeEnabled,
-				Identifier.of("client-time", "textures/gui/checkmark.png"), 16,
+		timeEnabledButton = new CheckboxButton(LumaTime.timeEnabled,
+				Identifier.of("lumatime", "textures/gui/checkmark.png"), 16,
 				timeSlider.getX() - 32 + CheckboxPadding, timeSlider.getY() + CheckboxPadding,
 				32 - (CheckboxPadding * 2), 32 - (CheckboxPadding * 2),
 				Text.empty(), (boolean b) -> {
-					ClientTime.timeEnabled = b;
+					LumaTime.timeEnabled = b;
 				});
 		addDrawable(timeSlider);
 		addSelectableChild(timeSlider);
 		addDrawable(timeEnabledButton);
 		addSelectableChild(timeEnabledButton);
 
-		moonPhaseText = new TextWidget(Text.translatable("clienttime.timeScreen.moonPhase"), textRenderer);
+		moonPhaseText = new TextWidget(Text.translatable("lumatime.timeScreen.moonPhase"), textRenderer);
 		moonPhaseText.setPosition(timeSlider.getX(), timeSlider.getY() + timeSlider.getHeight());
 		addDrawableChild(moonPhaseText);
 
 		moonPhaseSlider = new SimpleSlider(0, 7);
-		moonPhaseSlider.setIValue(ClientTime.moonPhase);
+		moonPhaseSlider.setIValue(LumaTime.moonPhase);
 		moonPhaseSlider.onValue = (Long i) -> {
 			long j = i;
-			ClientTime.moonPhase = (int) j;
+			LumaTime.moonPhase = (int) j;
 		};
 		moonPhaseSlider.setWidth(timeSlider.getWidth());
 		moonPhaseSlider.setHeight(timeSlider.getHeight());
 		moonPhaseSlider.setPosition(moonPhaseText.getX(), moonPhaseText.getY() + moonPhaseText.getHeight());
 
-		moonPhaseEnabledButton = new CheckboxButton(ClientTime.moonPhaseEnabled,
-				Identifier.of("client-time", "textures/gui/checkmark.png"), 16,
+		moonPhaseEnabledButton = new CheckboxButton(LumaTime.moonPhaseEnabled,
+				Identifier.of("lumatime", "textures/gui/checkmark.png"), 16,
 				moonPhaseSlider.getX() - 32 + CheckboxPadding, moonPhaseSlider.getY() + CheckboxPadding,
 				32 - (CheckboxPadding * 2), 32 - (CheckboxPadding * 2),
 				Text.empty(), (boolean b) -> {
-					ClientTime.moonPhaseEnabled = b;
+					LumaTime.moonPhaseEnabled = b;
 				});
 		addDrawable(moonPhaseSlider);
 		addSelectableChild(moonPhaseSlider);
 		addDrawable(moonPhaseEnabledButton);
 		addSelectableChild(moonPhaseEnabledButton);
 
-		weatherText = new TextWidget(Text.translatable("clienttime.timeScreen.weather"), textRenderer);
-		weatherText.setPosition(moonPhaseSlider.getX(), moonPhaseSlider.getY() + moonPhaseSlider.getHeight());
+		weatherText = new TextWidget(Text.translatable("lumatime.timeScreen.weather"), textRenderer);
+		int weatherX = moonPhaseSlider.getX() + moonPhaseSlider.getWidth() + 72;
+		weatherText.setPosition(weatherX, moonPhaseText.getY());
 		addDrawableChild(weatherText);
 
-		rainButton = new CheckboxButton(ClientTime.rain,
-				Identifier.of("client-time", "textures/gui/rain.png"), 8,
-				weatherText.getX(), weatherText.getY() + weatherText.getHeight(),
+		rainButton = new CheckboxButton(LumaTime.rain,
+				Identifier.of("lumatime", "textures/gui/rain.png"), 8,
+				weatherText.getX(), moonPhaseSlider.getY(),
 				32, 32,
 				Text.empty(), (boolean b) -> {
-					ClientTime.rain = b;
+					LumaTime.rain = b;
+					if (b) {
+						LumaTime.snow = false;
+						snowButton.checked = false;
+					}
 				});
 
-		thunderButton = new CheckboxButton(ClientTime.thunder,
-				Identifier.of("client-time", "textures/gui/thunder.png"), 8,
+		snowButton = new CheckboxButton(LumaTime.snow,
+				Identifier.of("lumatime", "textures/gui/snow.png"), 16,
 				rainButton.getX() + 32, rainButton.getY(),
 				32, 32,
 				Text.empty(), (boolean b) -> {
-					ClientTime.thunder = b;
+					LumaTime.snow = b;
+					if (b) {
+						LumaTime.rain = false;
+						rainButton.checked = false;
+					}
 				});
 
-		weatherEnabledButton = new CheckboxButton(ClientTime.weatherEnabled,
-				Identifier.of("client-time", "textures/gui/checkmark.png"), 16,
+		thunderButton = new CheckboxButton(LumaTime.thunder,
+				Identifier.of("lumatime", "textures/gui/thunder.png"), 8,
+				snowButton.getX() + 32, snowButton.getY(),
+				32, 32,
+				Text.empty(), (boolean b) -> {
+					LumaTime.thunder = b;
+				});
+
+		weatherEnabledButton = new CheckboxButton(LumaTime.weatherEnabled,
+				Identifier.of("lumatime", "textures/gui/checkmark.png"), 16,
 				rainButton.getX() - 32 + CheckboxPadding, rainButton.getY() + CheckboxPadding,
 				32 - (CheckboxPadding * 2), 32 - (CheckboxPadding * 2),
 				Text.empty(), (boolean b) -> {
-					ClientTime.weatherEnabled = b;
+					LumaTime.weatherEnabled = b;
 				});
 
 		addDrawable(weatherEnabledButton);
 		addSelectableChild(weatherEnabledButton);
 		addDrawable(rainButton);
 		addSelectableChild(rainButton);
+		addDrawable(snowButton);
+		addSelectableChild(snowButton);
 		addDrawable(thunderButton);
 		addSelectableChild(thunderButton);
 
 		addDrawable(new Drawable() {
 			@Override
 			public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-				int clocktex = ((int) (ClientTime.time - 6000) * 62 / 24000);
+				int clocktex = ((int) (LumaTime.time - 6000) * 62 / 24000);
 				if (clocktex < 0)
 					clocktex += 62;
 				context.drawTexture(RenderPipelines.GUI_TEXTURED,
@@ -193,12 +234,12 @@ public class TimeScreen extends Screen {
 						16, 16,
 						16, 16);
 
-				int col = ClientTime.moonPhase / 4;
-				int row = ClientTime.moonPhase % 4;
+				int col = LumaTime.moonPhase / 4;
+				int row = LumaTime.moonPhase % 4;
 
 				MoonPhase setPhase = null;
 				for (MoonPhase phase : MoonPhase.values()) {
-					if (phase.index == ClientTime.moonPhase) {
+					if (phase.index == LumaTime.moonPhase) {
 						setPhase = phase;
 						break;
 					}
@@ -327,7 +368,7 @@ public class TimeScreen extends Screen {
 
 	@Override
 	public void close() {
-		ClientTime.saveConfig();
+		LumaTime.saveConfig();
 		client.setScreen(parent);
 	}
 }

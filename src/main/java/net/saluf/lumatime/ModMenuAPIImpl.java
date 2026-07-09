@@ -1,4 +1,4 @@
-package xyz.ryhon.clienttime;
+package net.saluf.lumatime;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;

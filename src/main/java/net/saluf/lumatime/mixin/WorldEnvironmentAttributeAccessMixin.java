@@ -1,4 +1,4 @@
-package xyz.ryhon.clienttime.mixin;
+package net.saluf.lumatime.mixin;
 
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,7 +12,7 @@ import net.minecraft.world.attribute.EnvironmentAttribute;
 import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.attribute.WeightedAttributeList;
 import net.minecraft.world.attribute.WorldEnvironmentAttributeAccess;
-import xyz.ryhon.clienttime.ClientTime;
+import net.saluf.lumatime.LumaTime;
 
 @Mixin(WorldEnvironmentAttributeAccess.class)
 public class WorldEnvironmentAttributeAccessMixin {
@@ -21,9 +21,9 @@ public class WorldEnvironmentAttributeAccessMixin {
 		if (attribute != EnvironmentAttributes.MOON_PHASE_VISUAL)
 			return;
 
-		if (ClientTime.moonPhaseEnabled) {
+		if (LumaTime.moonPhaseEnabled) {
 			for (MoonPhase phase : MoonPhase.values()) {
-				if (phase.index == ClientTime.moonPhase) {
+				if (phase.index == LumaTime.moonPhase) {
 					ci.setReturnValue((Value) phase);
 					return;
 				}
@@ -36,9 +36,9 @@ public class WorldEnvironmentAttributeAccessMixin {
 		if (attribute != EnvironmentAttributes.MOON_PHASE_VISUAL)
 			return;
 
-		if (ClientTime.moonPhaseEnabled) {
+		if (LumaTime.moonPhaseEnabled) {
 			for (MoonPhase phase : MoonPhase.values()) {
-				if (phase.index == ClientTime.moonPhase) {
+				if (phase.index == LumaTime.moonPhase) {
 					ci.setReturnValue((Value) phase);
 					return;
 				}

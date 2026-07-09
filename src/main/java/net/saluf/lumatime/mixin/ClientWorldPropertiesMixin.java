@@ -1,7 +1,7 @@
-package xyz.ryhon.clienttime.mixin;
+package net.saluf.lumatime.mixin;
 
 import net.minecraft.client.world.ClientWorld;
-import xyz.ryhon.clienttime.ClientTime;
+import net.saluf.lumatime.LumaTime;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,24 +12,24 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ClientWorldPropertiesMixin {
 	@Inject(at = @At("TAIL"), method = "getTimeOfDay", cancellable = true)
 	private void getTimeOfDay(CallbackInfoReturnable<Long> ci) {
-		if (ClientTime.timeEnabled) {
-			ci.setReturnValue(ClientTime.time);
+		if (LumaTime.timeEnabled) {
+			ci.setReturnValue(LumaTime.time);
 			return;
 		}
 	}
 
 	@Inject(at = @At("TAIL"), method = "isRaining", cancellable = true)
 	private void isRaining(CallbackInfoReturnable<Boolean> ci) {
-		if (ClientTime.weatherEnabled) {
-			ci.setReturnValue(ClientTime.rain);
+		if (LumaTime.weatherEnabled) {
+			ci.setReturnValue(LumaTime.rain || LumaTime.snow);
 			return;
 		}
 	}
 
 	@Inject(at = @At("TAIL"), method = "isThundering", cancellable = true)
 	private void isThundering(CallbackInfoReturnable<Boolean> ci) {
-		if (ClientTime.weatherEnabled) {
-			ci.setReturnValue(ClientTime.thunder);
+		if (LumaTime.weatherEnabled) {
+			ci.setReturnValue(LumaTime.thunder);
 			return;
 		}
 	}
