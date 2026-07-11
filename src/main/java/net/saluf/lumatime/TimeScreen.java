@@ -7,6 +7,7 @@ import org.joml.Math;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.Click;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -15,6 +16,7 @@ import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.input.AbstractInput;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
@@ -69,6 +71,28 @@ public class TimeScreen extends Screen {
 	@Override
 	public boolean shouldPause() {
 		return false;
+	}
+
+	@Override
+	public boolean keyPressed(KeyInput input) {
+		if (LumaTime.menuBind.matchesKey(input)) {
+			return closeWithMenuBind();
+		}
+		return super.keyPressed(input);
+	}
+
+	@Override
+	public boolean mouseClicked(Click input, boolean doubled) {
+		if (LumaTime.menuBind.matchesMouse(input)) {
+			return closeWithMenuBind();
+		}
+		return super.mouseClicked(input, doubled);
+	}
+
+	private boolean closeWithMenuBind() {
+		LumaTime.menuToggleHandled = true;
+		close();
+		return true;
 	}
 
 	@Override
@@ -270,6 +294,19 @@ public class TimeScreen extends Screen {
 		public void setIValue(long v) {
 			iValue = v;
 			setValue((v - min) / (double) (max - min));
+		}
+
+		@Override
+		public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+			if (!isMouseOver(mouseX, mouseY) || verticalAmount == 0)
+				return false;
+
+			long step = 1;
+			long nextValue = iValue + (verticalAmount > 0 ? step : -step);
+			setIValue(java.lang.Math.max(min, java.lang.Math.min(max, nextValue)));
+			if (onValue != null)
+				onValue.accept(iValue);
+			return true;
 		}
 
 		@Override

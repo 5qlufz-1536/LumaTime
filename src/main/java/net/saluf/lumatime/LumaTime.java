@@ -33,6 +33,8 @@ public class LumaTime implements ModInitializer {
 
 	public static Boolean moonPhaseEnabled = false;
 	public static int moonPhase = 0;
+	public static KeyBinding menuBind;
+	public static boolean menuToggleHandled;
 
 	int ticks = 0;
 	final int autoSaveTicks = 20 * 60 * 3; 
@@ -42,7 +44,7 @@ public class LumaTime implements ModInitializer {
 		loadConfig();
 
 		Category bindCategory = Category.create(Identifier.of("lumatime", "lumatime"));
-		KeyBinding menuBind = new KeyBinding("key.lumatime.menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+		menuBind = new KeyBinding("key.lumatime.menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
 				bindCategory);
 		KeyBindingHelper.registerKeyBinding(menuBind);
 
@@ -98,8 +100,13 @@ public class LumaTime implements ModInitializer {
 				saveConfig();
 			}
 
-			if (menuBind.wasPressed())
-				client.setScreen(new TimeScreen(null));
+			if (menuBind.wasPressed() && !menuToggleHandled) {
+				if (client.currentScreen instanceof TimeScreen timeScreen)
+					timeScreen.close();
+				else
+					client.setScreen(new TimeScreen(null));
+			}
+			menuToggleHandled = false;
 
 			if (toggleBind.wasPressed())
 				timeEnabled = !timeEnabled;

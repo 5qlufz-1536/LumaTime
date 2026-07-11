@@ -2,7 +2,7 @@
 	"modmenu.descriptionTranslation.lumatime": "Zmień godzinę i pogodę na kliencie.",
 
 	"key.category.lumatime.lumatime": "LumaTime",
-	"key.lumatime.menu": "Otwórz menu",
+	"key.lumatime.menu": "Otwórz/zamknij menu",
 	"key.lumatime.toggle": "Przełącz zmianę czasu",
 	"key.lumatime.toggleWeather": "Przełącz zmianę pogody",
 	"key.lumatime.toggleRain": "Przełącz deszcz",

@@ -1,6 +1,6 @@
 {
 	"key.category.lumatime.lumatime": "LumaTime",
-	"key.lumatime.menu": "メニューを開く",
+	"key.lumatime.menu": "メニューを開閉",
 	"key.lumatime.toggle": "時刻オーバーライド切替",
 	"key.lumatime.toggleWeather": "天候オーバーライド切替",
 	"key.lumatime.toggleRain": "雨切替",
