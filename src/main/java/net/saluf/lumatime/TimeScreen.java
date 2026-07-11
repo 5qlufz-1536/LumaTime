@@ -15,10 +15,10 @@ import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.input.AbstractInput;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.world.MoonPhase;
 
 public class TimeScreen extends Screen {
 	Screen parent;
@@ -146,10 +146,7 @@ public class TimeScreen extends Screen {
 
 		moonPhaseSlider = new SimpleSlider(0, 7);
 		moonPhaseSlider.setIValue(LumaTime.moonPhase);
-		moonPhaseSlider.onValue = (Long i) -> {
-			long j = i;
-			LumaTime.moonPhase = (int) j;
-		};
+		moonPhaseSlider.onValue = (Long i) -> LumaTime.moonPhase = i.intValue();
 		moonPhaseSlider.setWidth(timeSlider.getWidth());
 		moonPhaseSlider.setHeight(timeSlider.getHeight());
 		moonPhaseSlider.setPosition(moonPhaseText.getX(), moonPhaseText.getY() + moonPhaseText.getHeight());
@@ -158,9 +155,7 @@ public class TimeScreen extends Screen {
 				Identifier.of("lumatime", "textures/gui/checkmark.png"), 16,
 				moonPhaseSlider.getX() - 32 + CheckboxPadding, moonPhaseSlider.getY() + CheckboxPadding,
 				32 - (CheckboxPadding * 2), 32 - (CheckboxPadding * 2),
-				Text.empty(), (boolean b) -> {
-					LumaTime.moonPhaseEnabled = b;
-				});
+				Text.empty(), (boolean b) -> LumaTime.moonPhaseEnabled = b);
 		addDrawable(moonPhaseSlider);
 		addSelectableChild(moonPhaseSlider);
 		addDrawable(moonPhaseEnabledButton);
@@ -234,23 +229,15 @@ public class TimeScreen extends Screen {
 						16, 16,
 						16, 16);
 
-				int col = LumaTime.moonPhase / 4;
-				int row = LumaTime.moonPhase % 4;
-
-				MoonPhase setPhase = null;
-				for (MoonPhase phase : MoonPhase.values()) {
-					if (phase.index == LumaTime.moonPhase) {
-						setPhase = phase;
-						break;
-					}
-				}
-
-				context.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of("textures/environment/celestial/moon/" + setPhase.name + ".png"),
+				int textureX = (LumaTime.moonPhase % 4) * 32;
+				int textureY = (LumaTime.moonPhase / 4) * 32;
+				context.drawTexture(RenderPipelines.GUI_TEXTURED,
+						Identifier.of("textures/environment/moon_phases.png"),
 						moonPhaseSlider.getX() + moonPhaseSlider.getWidth(), moonPhaseSlider.getY(),
+						textureX, textureY,
 						32, 32,
-						32, 32,
-						32, 32,
-						32, 32);
+						128, 64);
+
 			}
 		});
 	}
@@ -258,12 +245,14 @@ public class TimeScreen extends Screen {
 	public static class SimpleSlider extends SliderWidget {
 		long min, max;
 		long iValue;
+		long scrollStep;
 		public Consumer<Long> onValue;
 
 		public SimpleSlider(long min, long max) {
 			super(0, 0, 0, 0, Text.empty(), 0);
 			this.min = min;
 			this.max = max;
+			this.scrollStep = max - min <= 8 ? 1 : 100;
 			updateMessage();
 		}
 
@@ -286,6 +275,22 @@ public class TimeScreen extends Screen {
 		protected void updateMessage() {
 			setMessage(Text.literal(iValue + " / " + max));
 		}
+
+		@Override
+		public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+			if (!active || !visible || !isMouseOver(mouseX, mouseY) || verticalAmount == 0.0) {
+				return false;
+			}
+
+			long nextValue = java.lang.Math.clamp(iValue + (verticalAmount > 0 ? scrollStep : -scrollStep), min, max);
+			if (nextValue != iValue) {
+				setIValue(nextValue);
+				if (onValue != null) {
+					onValue.accept(iValue);
+				}
+			}
+			return true;
+		}
 	}
 
 	public static class ButtonWithIcon extends PressableWidget {
@@ -303,8 +308,8 @@ public class TimeScreen extends Screen {
 		}
 
 		@Override
-		protected void drawIcon(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-			drawButton(context);
+		protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+			super.renderWidget(context, mouseX, mouseY, deltaTicks);
 			context.drawTexture(RenderPipelines.GUI_TEXTURED, texture,
 					getX() + (getWidth() / 4), getY() + (getHeight() / 4),
 					0, 0,
@@ -345,8 +350,8 @@ public class TimeScreen extends Screen {
 		}
 
 		@Override
-		protected void drawIcon(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-			drawButton(context);
+		protected void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+			super.renderWidget(context, mouseX, mouseY, deltaTicks);
 			context.drawTexture(RenderPipelines.GUI_TEXTURED, checkTexture,
 					getX() + (getWidth() / 4), getY() + (getHeight() / 4),
 					0, 0,
@@ -370,5 +375,14 @@ public class TimeScreen extends Screen {
 	public void close() {
 		LumaTime.saveConfig();
 		client.setScreen(parent);
+	}
+
+	@Override
+	public boolean keyPressed(KeyInput input) {
+		if (LumaTime.menuBind != null && LumaTime.menuBind.matchesKey(input)) {
+			close();
+			return true;
+		}
+		return super.keyPressed(input);
 	}
 }

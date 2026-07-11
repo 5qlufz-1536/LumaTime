@@ -22,6 +22,7 @@ import com.google.gson.JsonPrimitive;
 
 public class LumaTime implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("lumatime");
+	public static KeyBinding menuBind;
 
 	public static Boolean timeEnabled = false;
 	public static long time = 0L;
@@ -42,7 +43,7 @@ public class LumaTime implements ModInitializer {
 		loadConfig();
 
 		Category bindCategory = Category.create(Identifier.of("lumatime", "lumatime"));
-		KeyBinding menuBind = new KeyBinding("key.lumatime.menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+		menuBind = new KeyBinding("key.lumatime.menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
 				bindCategory);
 		KeyBindingHelper.registerKeyBinding(menuBind);
 
@@ -98,8 +99,13 @@ public class LumaTime implements ModInitializer {
 				saveConfig();
 			}
 
-			if (menuBind.wasPressed())
-				client.setScreen(new TimeScreen(null));
+			if (menuBind.wasPressed()) {
+				if (client.currentScreen instanceof TimeScreen) {
+					client.currentScreen.close();
+				} else {
+					client.setScreen(new TimeScreen(client.currentScreen));
+				}
+			}
 
 			if (toggleBind.wasPressed())
 				timeEnabled = !timeEnabled;

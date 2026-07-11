@@ -6,7 +6,7 @@
 		"WorldMixin",
 		"BiomeMixin",
 		"ClientWorldPropertiesMixin",
-		"WorldEnvironmentAttributeAccessMixin",
+		"LunarWorldViewMixin",
 		"WeatherRenderingMixin"
 	],
 	"injectors": {
