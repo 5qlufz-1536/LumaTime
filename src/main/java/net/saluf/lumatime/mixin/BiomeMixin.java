@@ -1,8 +1,8 @@
 package net.saluf.lumatime.mixin;
 
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.Biome.Precipitation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biome.Precipitation;
 import net.saluf.lumatime.LumaTime;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Biome.class)
 public class BiomeMixin {
-	@Inject(at = @At("HEAD"), method = "getPrecipitation", cancellable = true)
+	@Inject(at = @At("HEAD"), method = "getPrecipitationAt", cancellable = true)
 	private void getPrecipitation(BlockPos pos, int seaLevel, CallbackInfoReturnable<Precipitation> ci) {
 		if (LumaTime.weatherEnabled && LumaTime.snow) {
 			ci.setReturnValue(Precipitation.RAIN);

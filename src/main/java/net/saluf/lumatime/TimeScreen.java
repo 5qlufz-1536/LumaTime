@@ -1,45 +1,43 @@
 package net.saluf.lumatime;
 
 import java.util.function.Consumer;
-
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Button.OnPress;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.ARGB;
+import net.minecraft.world.level.MoonPhase;
 import org.joml.Math;
-
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Click;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ButtonWidget.PressAction;
-import net.minecraft.client.gui.widget.PressableWidget;
-import net.minecraft.client.gui.widget.SliderWidget;
-import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.input.AbstractInput;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.ColorHelper;
-import net.minecraft.world.MoonPhase;
 
 public class TimeScreen extends Screen {
 	Screen parent;
 
-	TextWidget timePresetsText;
+	StringWidget timePresetsText;
 	ButtonWithIcon sunriseButton;
 	ButtonWithIcon noonButton;
 	ButtonWithIcon sunsetButton;
 	ButtonWithIcon midnightButton;
 
-	TextWidget timeText;
+	StringWidget timeText;
 	SimpleSlider timeSlider;
 	CheckboxButton timeEnabledButton;
 
-	TextWidget moonPhaseText;
+	StringWidget moonPhaseText;
 	SimpleSlider moonPhaseSlider;
 	CheckboxButton moonPhaseEnabledButton;
 
-	TextWidget weatherText;
+	StringWidget weatherText;
 	CheckboxButton weatherEnabledButton;
 	CheckboxButton rainButton;
 	CheckboxButton snowButton;
@@ -48,41 +46,29 @@ public class TimeScreen extends Screen {
 	static final int CheckboxPadding = 4;
 
 	public TimeScreen(Screen parent) {
-		super(Text.empty());
+		super(Component.empty());
 		this.parent = parent;
 	}
 
 	@Override
-	public void applyBlur(DrawContext context) {
+	public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks) {
 	}
 
 	@Override
-	public void blur() {
-	}
-
-	@Override
-	public void renderInGameBackground(DrawContext context) {
-	}
-
-	@Override
-	public void renderBackground(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-	}
-
-	@Override
-	public boolean shouldPause() {
+	public boolean isPauseScreen() {
 		return false;
 	}
 
 	@Override
-	public boolean keyPressed(KeyInput input) {
-		if (LumaTime.menuBind.matchesKey(input)) {
+	public boolean keyPressed(KeyEvent input) {
+		if (LumaTime.menuBind.matches(input)) {
 			return closeWithMenuBind();
 		}
 		return super.keyPressed(input);
 	}
 
 	@Override
-	public boolean mouseClicked(Click input, boolean doubled) {
+	public boolean mouseClicked(MouseButtonEvent input, boolean doubled) {
 		if (LumaTime.menuBind.matchesMouse(input)) {
 			return closeWithMenuBind();
 		}
@@ -91,7 +77,7 @@ public class TimeScreen extends Screen {
 
 	private boolean closeWithMenuBind() {
 		LumaTime.menuToggleHandled = true;
-		close();
+		onClose();
 		return true;
 	}
 
@@ -106,67 +92,67 @@ public class TimeScreen extends Screen {
 		timeSlider.setHeight(32);
 		timeSlider.setPosition((width / 2) - (timeSlider.getWidth() / 2), java.lang.Math.max(60, height - 96));
 
-		timeText = new TextWidget(Text.translatable("lumatime.timeScreen.time"), textRenderer);
-		timeText.setPosition(timeSlider.getX(), timeSlider.getY() - textRenderer.fontHeight);
-		addDrawableChild(timeText);
+		timeText = new StringWidget(Component.translatable("lumatime.timeScreen.time"), font);
+		timeText.setPosition(timeSlider.getX(), timeSlider.getY() - font.lineHeight);
+		addRenderableWidget(timeText);
 
-		timePresetsText = new TextWidget(Text.translatable("lumatime.timeScreen.timePresets"), textRenderer);
+		timePresetsText = new StringWidget(Component.translatable("lumatime.timeScreen.timePresets"), font);
 		timePresetsText.setPosition(timeSlider.getX() + timeSlider.getWidth() + 72, timeText.getY());
-		addDrawableChild(timePresetsText);
+		addRenderableWidget(timePresetsText);
 
-		sunriseButton = new ButtonWithIcon(Identifier.of("textures/item/clock_48.png"), 32,
+		sunriseButton = new ButtonWithIcon(Identifier.parse("textures/item/clock_48.png"), 32,
 				timePresetsText.getX(), timeSlider.getY(),
 				32, 32,
-				Text.empty(), (ButtonWidget b) -> {
+				Component.empty(), (Button b) -> {
 					LumaTime.time = 0;
 					timeSlider.setIValue(0);
 				});
-		noonButton = new ButtonWithIcon(Identifier.of("textures/item/clock_00.png"), 32,
+		noonButton = new ButtonWithIcon(Identifier.parse("textures/item/clock_00.png"), 32,
 				sunriseButton.getX() + 32, sunriseButton.getY(),
 				32, 32,
-				Text.empty(), (ButtonWidget b) -> {
+				Component.empty(), (Button b) -> {
 					LumaTime.time = 6000;
 					timeSlider.setIValue(6000);
 				});
-		sunsetButton = new ButtonWithIcon(Identifier.of("textures/item/clock_15.png"), 32,
+		sunsetButton = new ButtonWithIcon(Identifier.parse("textures/item/clock_15.png"), 32,
 				noonButton.getX() + 32, noonButton.getY(),
 				32, 32,
-				Text.empty(), (ButtonWidget b) -> {
+				Component.empty(), (Button b) -> {
 					LumaTime.time = 12000;
 					timeSlider.setIValue(12000);
 				});
-		midnightButton = new ButtonWithIcon(Identifier.of("textures/item/clock_32.png"), 32,
+		midnightButton = new ButtonWithIcon(Identifier.parse("textures/item/clock_32.png"), 32,
 				sunsetButton.getX() + 32, sunsetButton.getY(),
 				32, 32,
-				Text.empty(), (ButtonWidget b) -> {
+				Component.empty(), (Button b) -> {
 					LumaTime.time = 18000;
 					timeSlider.setIValue(18000);
 				});
 
-		addDrawable(sunriseButton);
-		addSelectableChild(sunriseButton);
-		addDrawable(noonButton);
-		addSelectableChild(noonButton);
-		addDrawable(sunsetButton);
-		addSelectableChild(sunsetButton);
-		addDrawable(midnightButton);
-		addSelectableChild(midnightButton);
+		addRenderableOnly(sunriseButton);
+		addWidget(sunriseButton);
+		addRenderableOnly(noonButton);
+		addWidget(noonButton);
+		addRenderableOnly(sunsetButton);
+		addWidget(sunsetButton);
+		addRenderableOnly(midnightButton);
+		addWidget(midnightButton);
 
 		timeEnabledButton = new CheckboxButton(LumaTime.timeEnabled,
-				Identifier.of("lumatime", "textures/gui/checkmark.png"), 16,
+				Identifier.fromNamespaceAndPath("lumatime", "textures/gui/checkmark.png"), 16,
 				timeSlider.getX() - 32 + CheckboxPadding, timeSlider.getY() + CheckboxPadding,
 				32 - (CheckboxPadding * 2), 32 - (CheckboxPadding * 2),
-				Text.empty(), (boolean b) -> {
+				Component.empty(), (boolean b) -> {
 					LumaTime.timeEnabled = b;
 				});
-		addDrawable(timeSlider);
-		addSelectableChild(timeSlider);
-		addDrawable(timeEnabledButton);
-		addSelectableChild(timeEnabledButton);
+		addRenderableOnly(timeSlider);
+		addWidget(timeSlider);
+		addRenderableOnly(timeEnabledButton);
+		addWidget(timeEnabledButton);
 
-		moonPhaseText = new TextWidget(Text.translatable("lumatime.timeScreen.moonPhase"), textRenderer);
+		moonPhaseText = new StringWidget(Component.translatable("lumatime.timeScreen.moonPhase"), font);
 		moonPhaseText.setPosition(timeSlider.getX(), timeSlider.getY() + timeSlider.getHeight());
-		addDrawableChild(moonPhaseText);
+		addRenderableWidget(moonPhaseText);
 
 		moonPhaseSlider = new SimpleSlider(0, 7);
 		moonPhaseSlider.setIValue(LumaTime.moonPhase);
@@ -179,27 +165,27 @@ public class TimeScreen extends Screen {
 		moonPhaseSlider.setPosition(moonPhaseText.getX(), moonPhaseText.getY() + moonPhaseText.getHeight());
 
 		moonPhaseEnabledButton = new CheckboxButton(LumaTime.moonPhaseEnabled,
-				Identifier.of("lumatime", "textures/gui/checkmark.png"), 16,
+				Identifier.fromNamespaceAndPath("lumatime", "textures/gui/checkmark.png"), 16,
 				moonPhaseSlider.getX() - 32 + CheckboxPadding, moonPhaseSlider.getY() + CheckboxPadding,
 				32 - (CheckboxPadding * 2), 32 - (CheckboxPadding * 2),
-				Text.empty(), (boolean b) -> {
+				Component.empty(), (boolean b) -> {
 					LumaTime.moonPhaseEnabled = b;
 				});
-		addDrawable(moonPhaseSlider);
-		addSelectableChild(moonPhaseSlider);
-		addDrawable(moonPhaseEnabledButton);
-		addSelectableChild(moonPhaseEnabledButton);
+		addRenderableOnly(moonPhaseSlider);
+		addWidget(moonPhaseSlider);
+		addRenderableOnly(moonPhaseEnabledButton);
+		addWidget(moonPhaseEnabledButton);
 
-		weatherText = new TextWidget(Text.translatable("lumatime.timeScreen.weather"), textRenderer);
+		weatherText = new StringWidget(Component.translatable("lumatime.timeScreen.weather"), font);
 		int weatherX = moonPhaseSlider.getX() + moonPhaseSlider.getWidth() + 72;
 		weatherText.setPosition(weatherX, moonPhaseText.getY());
-		addDrawableChild(weatherText);
+		addRenderableWidget(weatherText);
 
 		rainButton = new CheckboxButton(LumaTime.rain,
-				Identifier.of("lumatime", "textures/gui/rain.png"), 8,
+				Identifier.fromNamespaceAndPath("lumatime", "textures/gui/rain.png"), 8,
 				weatherText.getX(), moonPhaseSlider.getY(),
 				32, 32,
-				Text.empty(), (boolean b) -> {
+				Component.empty(), (boolean b) -> {
 					LumaTime.rain = b;
 					if (b) {
 						LumaTime.snow = false;
@@ -208,10 +194,10 @@ public class TimeScreen extends Screen {
 				});
 
 		snowButton = new CheckboxButton(LumaTime.snow,
-				Identifier.of("lumatime", "textures/gui/snow.png"), 16,
+				Identifier.fromNamespaceAndPath("lumatime", "textures/gui/snow.png"), 16,
 				rainButton.getX() + 32, rainButton.getY(),
 				32, 32,
-				Text.empty(), (boolean b) -> {
+				Component.empty(), (boolean b) -> {
 					LumaTime.snow = b;
 					if (b) {
 						LumaTime.rain = false;
@@ -220,38 +206,38 @@ public class TimeScreen extends Screen {
 				});
 
 		thunderButton = new CheckboxButton(LumaTime.thunder,
-				Identifier.of("lumatime", "textures/gui/thunder.png"), 8,
+				Identifier.fromNamespaceAndPath("lumatime", "textures/gui/thunder.png"), 8,
 				snowButton.getX() + 32, snowButton.getY(),
 				32, 32,
-				Text.empty(), (boolean b) -> {
+				Component.empty(), (boolean b) -> {
 					LumaTime.thunder = b;
 				});
 
 		weatherEnabledButton = new CheckboxButton(LumaTime.weatherEnabled,
-				Identifier.of("lumatime", "textures/gui/checkmark.png"), 16,
+				Identifier.fromNamespaceAndPath("lumatime", "textures/gui/checkmark.png"), 16,
 				rainButton.getX() - 32 + CheckboxPadding, rainButton.getY() + CheckboxPadding,
 				32 - (CheckboxPadding * 2), 32 - (CheckboxPadding * 2),
-				Text.empty(), (boolean b) -> {
+				Component.empty(), (boolean b) -> {
 					LumaTime.weatherEnabled = b;
 				});
 
-		addDrawable(weatherEnabledButton);
-		addSelectableChild(weatherEnabledButton);
-		addDrawable(rainButton);
-		addSelectableChild(rainButton);
-		addDrawable(snowButton);
-		addSelectableChild(snowButton);
-		addDrawable(thunderButton);
-		addSelectableChild(thunderButton);
+		addRenderableOnly(weatherEnabledButton);
+		addWidget(weatherEnabledButton);
+		addRenderableOnly(rainButton);
+		addWidget(rainButton);
+		addRenderableOnly(snowButton);
+		addWidget(snowButton);
+		addRenderableOnly(thunderButton);
+		addWidget(thunderButton);
 
-		addDrawable(new Drawable() {
+		addRenderableOnly(new Renderable() {
 			@Override
-			public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+			public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 				int clocktex = ((int) (LumaTime.time - 6000) * 62 / 24000);
 				if (clocktex < 0)
 					clocktex += 62;
-				context.drawTexture(RenderPipelines.GUI_TEXTURED,
-						Identifier.of(String.format("textures/item/clock_%02d.png", clocktex)),
+				context.blit(RenderPipelines.GUI_TEXTURED,
+						Identifier.parse(String.format("textures/item/clock_%02d.png", clocktex)),
 						timeSlider.getX() + timeSlider.getWidth(), timeSlider.getY(),
 						0, 0,
 						32, 32,
@@ -263,13 +249,13 @@ public class TimeScreen extends Screen {
 
 				MoonPhase setPhase = null;
 				for (MoonPhase phase : MoonPhase.values()) {
-					if (phase.index == LumaTime.moonPhase) {
+					if (phase.index() == LumaTime.moonPhase) {
 						setPhase = phase;
 						break;
 					}
 				}
 
-				context.drawTexture(RenderPipelines.GUI_TEXTURED, Identifier.of("textures/environment/celestial/moon/" + setPhase.name + ".png"),
+				context.blit(RenderPipelines.GUI_TEXTURED, Identifier.parse("textures/environment/celestial/moon/" + setPhase.getSerializedName() + ".png"),
 						moonPhaseSlider.getX() + moonPhaseSlider.getWidth(), moonPhaseSlider.getY(),
 						32, 32,
 						32, 32,
@@ -279,13 +265,13 @@ public class TimeScreen extends Screen {
 		});
 	}
 
-	public static class SimpleSlider extends SliderWidget {
+	public static class SimpleSlider extends AbstractSliderButton {
 		long min, max;
 		long iValue;
 		public Consumer<Long> onValue;
 
 		public SimpleSlider(long min, long max) {
-			super(0, 0, 0, 0, Text.empty(), 0);
+			super(0, 0, 0, 0, Component.empty(), 0);
 			this.min = min;
 			this.max = max;
 			updateMessage();
@@ -321,17 +307,17 @@ public class TimeScreen extends Screen {
 
 		@Override
 		protected void updateMessage() {
-			setMessage(Text.literal(iValue + " / " + max));
+			setMessage(Component.literal(iValue + " / " + max));
 		}
 	}
 
-	public static class ButtonWithIcon extends PressableWidget {
+	public static class ButtonWithIcon extends AbstractButton {
 		Identifier texture;
 		int texSize;
-		PressAction onPressAction;
+		OnPress onPressAction;
 
-		protected ButtonWithIcon(Identifier texture, int texSize, int x, int y, int width, int height, Text message,
-				PressAction onPress) {
+		protected ButtonWithIcon(Identifier texture, int texSize, int x, int y, int width, int height, Component message,
+				OnPress onPress) {
 			super(x, y, width, height, message);
 
 			onPressAction = onPress;
@@ -340,9 +326,9 @@ public class TimeScreen extends Screen {
 		}
 
 		@Override
-		protected void drawIcon(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-			drawButton(context);
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, texture,
+		protected void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks) {
+			extractDefaultSprite(context);
+			context.blit(RenderPipelines.GUI_TEXTURED, texture,
 					getX() + (getWidth() / 4), getY() + (getHeight() / 4),
 					0, 0,
 					texSize / 2, texSize / 2,
@@ -351,17 +337,17 @@ public class TimeScreen extends Screen {
 		}
 
 		@Override
-		public void onPress(AbstractInput input) {
+		public void onPress(InputWithModifiers input) {
 			onPressAction.onPress(null);
 		}
 
 		@Override
-		protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+		protected void updateWidgetNarration(NarrationElementOutput builder) {
 		}
 	}
 
-	public static class CheckboxButton extends PressableWidget {
-		private static final Identifier TEXTURE = Identifier.of("widget/checkbox");
+	public static class CheckboxButton extends AbstractButton {
+		private static final Identifier TEXTURE = Identifier.parse("widget/checkbox");
 		Identifier checkTexture;
 		int texSize;
 		public boolean checked;
@@ -372,7 +358,7 @@ public class TimeScreen extends Screen {
 		}
 
 		protected CheckboxButton(boolean checked, Identifier checkTexture, int texSize, int x, int y, int width,
-				int height, Text message, Action onPress) {
+				int height, Component message, Action onPress) {
 			super(x, y, width, height, message);
 			onPressAction = onPress;
 
@@ -382,30 +368,30 @@ public class TimeScreen extends Screen {
 		}
 
 		@Override
-		protected void drawIcon(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-			drawButton(context);
-			context.drawTexture(RenderPipelines.GUI_TEXTURED, checkTexture,
+		protected void extractContents(GuiGraphicsExtractor context, int mouseX, int mouseY, float deltaTicks) {
+			extractDefaultSprite(context);
+			context.blit(RenderPipelines.GUI_TEXTURED, checkTexture,
 					getX() + (getWidth() / 4), getY() + (getHeight() / 4),
 					0, 0,
 					getWidth() / 2, getWidth() / 2,
 					texSize, texSize,
-					texSize, texSize, ColorHelper.getWhite(checked ? 1.0f : 0.1f));
+					texSize, texSize, ARGB.white(checked ? 1.0f : 0.1f));
 		}
 
 		@Override
-		public void onPress(AbstractInput input) {
+		public void onPress(InputWithModifiers input) {
 			checked = !checked;
 			onPressAction.onPress(checked);
 		}
 
 		@Override
-		protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+		protected void updateWidgetNarration(NarrationElementOutput builder) {
 		}
 	}
 
 	@Override
-	public void close() {
+	public void onClose() {
 		LumaTime.saveConfig();
-		client.setScreen(parent);
+		minecraft.setScreen(parent);
 	}
 }

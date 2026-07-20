@@ -2,13 +2,11 @@ package net.saluf.lumatime;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.option.KeyBinding.Category;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.KeyMapping.Category;
+import net.minecraft.resources.Identifier;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.lwjgl.glfw.GLFW;
@@ -19,6 +17,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.mojang.blaze3d.platform.InputConstants;
 
 public class LumaTime implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger("lumatime");
@@ -33,7 +32,7 @@ public class LumaTime implements ModInitializer {
 
 	public static Boolean moonPhaseEnabled = false;
 	public static int moonPhase = 0;
-	public static KeyBinding menuBind;
+	public static KeyMapping menuBind;
 	public static boolean menuToggleHandled;
 
 	int ticks = 0;
@@ -43,54 +42,54 @@ public class LumaTime implements ModInitializer {
 	public void onInitialize() {
 		loadConfig();
 
-		Category bindCategory = Category.create(Identifier.of("lumatime", "lumatime"));
-		menuBind = new KeyBinding("key.lumatime.menu", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+		Category bindCategory = Category.register(Identifier.fromNamespaceAndPath("lumatime", "lumatime"));
+		menuBind = new KeyMapping("key.lumatime.menu", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
 				bindCategory);
-		KeyBindingHelper.registerKeyBinding(menuBind);
+		KeyMappingHelper.registerKeyMapping(menuBind);
 
-		KeyBinding toggleBind = new KeyBinding("key.lumatime.toggle", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+		KeyMapping toggleBind = new KeyMapping("key.lumatime.toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
 				bindCategory);
-		KeyBindingHelper.registerKeyBinding(toggleBind);
+		KeyMappingHelper.registerKeyMapping(toggleBind);
 
-		KeyBinding toggleWeatherBind = new KeyBinding("key.lumatime.toggleWeather", InputUtil.Type.KEYSYM,
+		KeyMapping toggleWeatherBind = new KeyMapping("key.lumatime.toggleWeather", InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
-		KeyBindingHelper.registerKeyBinding(toggleWeatherBind);
+		KeyMappingHelper.registerKeyMapping(toggleWeatherBind);
 
-		KeyBinding toggleRainBind = new KeyBinding("key.lumatime.toggleRain", InputUtil.Type.KEYSYM,
+		KeyMapping toggleRainBind = new KeyMapping("key.lumatime.toggleRain", InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
-		KeyBindingHelper.registerKeyBinding(toggleRainBind);
+		KeyMappingHelper.registerKeyMapping(toggleRainBind);
 
-		KeyBinding toggleSnowBind = new KeyBinding("key.lumatime.toggleSnow", InputUtil.Type.KEYSYM,
+		KeyMapping toggleSnowBind = new KeyMapping("key.lumatime.toggleSnow", InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
-		KeyBindingHelper.registerKeyBinding(toggleSnowBind);
+		KeyMappingHelper.registerKeyMapping(toggleSnowBind);
 
-		KeyBinding toggleThunderBind = new KeyBinding("key.lumatime.toggleThunder", InputUtil.Type.KEYSYM,
+		KeyMapping toggleThunderBind = new KeyMapping("key.lumatime.toggleThunder", InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
-		KeyBindingHelper.registerKeyBinding(toggleThunderBind);
+		KeyMappingHelper.registerKeyMapping(toggleThunderBind);
 
-		KeyBinding toggleMoonPhaseBind = new KeyBinding("key.lumatime.toggleMoonPhase", InputUtil.Type.KEYSYM,
+		KeyMapping toggleMoonPhaseBind = new KeyMapping("key.lumatime.toggleMoonPhase", InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
-		KeyBindingHelper.registerKeyBinding(toggleMoonPhaseBind);
+		KeyMappingHelper.registerKeyMapping(toggleMoonPhaseBind);
 
-		KeyBinding cycleMoonPhaseBind = new KeyBinding("key.lumatime.cycleMoonPhase", InputUtil.Type.KEYSYM,
+		KeyMapping cycleMoonPhaseBind = new KeyMapping("key.lumatime.cycleMoonPhase", InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
-		KeyBindingHelper.registerKeyBinding(cycleMoonPhaseBind);
+		KeyMappingHelper.registerKeyMapping(cycleMoonPhaseBind);
 
-		KeyBinding sunriseBind = new KeyBinding("key.lumatime.sunrise", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+		KeyMapping sunriseBind = new KeyMapping("key.lumatime.sunrise", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
 				bindCategory);
-		KeyBindingHelper.registerKeyBinding(sunriseBind);
+		KeyMappingHelper.registerKeyMapping(sunriseBind);
 
-		KeyBinding noonBind = new KeyBinding("key.lumatime.noon", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+		KeyMapping noonBind = new KeyMapping("key.lumatime.noon", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
 				bindCategory);
-		KeyBindingHelper.registerKeyBinding(noonBind);
+		KeyMappingHelper.registerKeyMapping(noonBind);
 
-		KeyBinding sunsetBind = new KeyBinding("key.lumatime.sunset", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
+		KeyMapping sunsetBind = new KeyMapping("key.lumatime.sunset", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN,
 				bindCategory);
-		KeyBindingHelper.registerKeyBinding(sunsetBind);
+		KeyMappingHelper.registerKeyMapping(sunsetBind);
 
-		KeyBinding midnightBind = new KeyBinding("key.lumatime.midnight", InputUtil.Type.KEYSYM,
+		KeyMapping midnightBind = new KeyMapping("key.lumatime.midnight", InputConstants.Type.KEYSYM,
 				GLFW.GLFW_KEY_UNKNOWN, bindCategory);
-		KeyBindingHelper.registerKeyBinding(midnightBind);
+		KeyMappingHelper.registerKeyMapping(midnightBind);
 
 		ClientTickEvents.END_CLIENT_TICK.register((client) -> {
 			ticks++;
@@ -100,53 +99,53 @@ public class LumaTime implements ModInitializer {
 				saveConfig();
 			}
 
-			if (menuBind.wasPressed() && !menuToggleHandled) {
-				if (client.currentScreen instanceof TimeScreen timeScreen)
-					timeScreen.close();
+			if (menuBind.consumeClick() && !menuToggleHandled) {
+				if (client.screen instanceof TimeScreen timeScreen)
+					timeScreen.onClose();
 				else
 					client.setScreen(new TimeScreen(null));
 			}
 			menuToggleHandled = false;
 
-			if (toggleBind.wasPressed())
+			if (toggleBind.consumeClick())
 				timeEnabled = !timeEnabled;
 
-			if (toggleWeatherBind.wasPressed())
+			if (toggleWeatherBind.consumeClick())
 				weatherEnabled = !weatherEnabled;
 
-			if (toggleRainBind.wasPressed()) {
+			if (toggleRainBind.consumeClick()) {
 				rain = !rain;
 				if (rain)
 					snow = false;
 			}
 
-			if (toggleSnowBind.wasPressed()) {
+			if (toggleSnowBind.consumeClick()) {
 				snow = !snow;
 				if (snow)
 					rain = false;
 			}
 
-			if (toggleThunderBind.wasPressed())
+			if (toggleThunderBind.consumeClick())
 				thunder = !thunder;
 
-			if (toggleMoonPhaseBind.wasPressed())
+			if (toggleMoonPhaseBind.consumeClick())
 				moonPhaseEnabled = !moonPhaseEnabled;
 
-			if (cycleMoonPhaseBind.wasPressed()) {
+			if (cycleMoonPhaseBind.consumeClick()) {
 				moonPhase++;
 				moonPhase %= 8;
 			}
 
-			if (sunriseBind.wasPressed())
+			if (sunriseBind.consumeClick())
 				time = 0;
 
-			if (noonBind.wasPressed())
+			if (noonBind.consumeClick())
 				time = 6000;
 
-			if (sunsetBind.wasPressed())
+			if (sunsetBind.consumeClick())
 				time = 12000;
 
-			if (midnightBind.wasPressed())
+			if (midnightBind.consumeClick())
 				time = 18000;
 		});
 	}
