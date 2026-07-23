@@ -7,7 +7,7 @@
 		"BiomeMixin",
 		"ClientClockManagerMixin",
 		"WorldEnvironmentAttributeAccessMixin",
-		"WeatherRenderingMixin"
+		"ClientLevelMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

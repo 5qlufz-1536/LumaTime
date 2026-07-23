@@ -100,10 +100,10 @@ public class LumaTime implements ModInitializer {
 			}
 
 			if (menuBind.consumeClick() && !menuToggleHandled) {
-				if (client.screen instanceof TimeScreen timeScreen)
+				if (client.gui.screen() instanceof TimeScreen timeScreen)
 					timeScreen.onClose();
 				else
-					client.setScreen(new TimeScreen(null));
+					client.gui.setScreen(new TimeScreen(null));
 			}
 			menuToggleHandled = false;
 

@@ -392,6 +392,6 @@ public class TimeScreen extends Screen {
 	@Override
 	public void onClose() {
 		LumaTime.saveConfig();
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 	}
 }
